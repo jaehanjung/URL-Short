@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 
 app.get('/new', (req, res)=>{
   if(req.query.secret === process.env.SECRET){
-    res.render('new.ejs')
+    res.render('new.ejs', {secret: process.env.SECRET})
   } else{
     res.status(403)
     res.send('403 forbidden')
@@ -32,12 +32,17 @@ app.get('/new', (req, res)=>{
 })
 
 app.post('/new', (req, res)=>{
- const urlItem = {
-  longUrl: req.body.longUrl,
-  slug: randomstring.generate(8)
- } 
- urls.push(urlItem)
+  if(req.body.secret === process.env.SECRET){
+    const urlItem = {
+      longUrl: req.body.longUrl,
+      slug: randomstring.generate(8)
+     } 
+     urls.push(urlItem)
  res.redirect('/')
+  } else {
+    res.status(404)
+    res.send('404 not found')
+  }
 })
 
 app.get('/:slug', (req, res)=>{
